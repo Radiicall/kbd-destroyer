@@ -48,11 +48,11 @@ fn main() {
     });
     loop {
         for i in rstart..=rend {
-            let file = std::fs::File::create(&path).unwrap();
+            let file = std::fs::File::create(&path).expect("Must run as root");
             let mut writer = BufWriter::new(file);
 
             println!("{}", &i);
-            writer.write_all(i.to_string().as_bytes()).ok();
+            writer.write_all(i.to_string().as_bytes()).ok().unwrap_or_else(|| println!("Failed to write file"));
 
             writer.flush().ok();
 
