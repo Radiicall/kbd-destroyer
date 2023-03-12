@@ -34,22 +34,22 @@ struct Args {
 fn main() {
     let args = Args::parse();
     let time = std::time::Duration::from_micros(args.sleeptime.unwrap_or_else(|| 5000));
+    let backlight = args.backlight
+        .unwrap_or_else(|| "kbd_backlight".to_string());
     let path = format!(
         "/sys/class/leds/{}/brightness",
-        args.backlight
-            .unwrap_or_else(|| "kbd_backlight".to_string())
+        backlight.clone()
     );
     let rstart = args.rstart.unwrap_or_else(|| 0);
     let rend = args.rend.unwrap_or_else(|| {
         std::fs::read_to_string(
-            std::path::Path::new(&path)
-                .parent()
-                .unwrap()
-                .to_string_lossy()
-                .to_string()
-                + "max_brightness",
+            format!(
+                "/sys/class/leds/{}/max_brightness",
+                backlight
+        )
         )
         .unwrap()
+        .trim()
         .parse::<i32>()
         .unwrap()
     });
