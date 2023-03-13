@@ -26,7 +26,7 @@ struct Args {
     #[arg(
         short = 'r',
         long = "reverse",
-        help = "If the range should go in reverse too"
+        help = "If the range should go in reverse too (true/false)"
     )]
     reverse: Option<bool>,
 }
@@ -46,11 +46,10 @@ fn main() {
             .parse::<i32>()
             .unwrap()
     });
+    let file = std::fs::File::create(&path).expect("Must run as root");
+    let mut writer = BufWriter::new(file);
     loop {
         for i in rstart..=rend {
-            let file = std::fs::File::create(&path).expect("Must run as root");
-            let mut writer = BufWriter::new(file);
-
             println!("{}", &i);
             writer.write_all(i.to_string().as_bytes()).ok().unwrap_or_else(|| println!("Failed to write file"));
 
@@ -59,11 +58,9 @@ fn main() {
             std::thread::sleep(time);
         }
         if args.reverse.unwrap_or_else(|| true) {
-            for i in -rend..=-rstart {
-                let file = std::fs::File::create(&path).unwrap();
-                let mut writer = BufWriter::new(file);
+            for i in -(rend-1)..=-(rstart+1) {
                 println!("{}", &i.abs());
-                writer.write_all((i.abs()).to_string().as_bytes()).ok();
+                writer.write_all((i.abs()).to_string().as_bytes()).ok().unwrap_or_else(|| println!("Failed to write file"));
 
                 writer.flush().ok();
 
