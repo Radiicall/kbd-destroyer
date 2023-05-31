@@ -26,7 +26,7 @@ struct Args {
     #[arg(
         short = 'r',
         long = "reverse",
-        help = "If the range should go in reverse too (true/false)"
+        help = "If the range should go in reverse too"
     )]
     reverse: Option<bool>,
 }
